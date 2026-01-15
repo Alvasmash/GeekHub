@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             GeekHubTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Java",
+                        name = "hola",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
