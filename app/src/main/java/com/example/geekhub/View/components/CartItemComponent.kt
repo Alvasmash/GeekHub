@@ -3,7 +3,6 @@ package com.example.geekhub.View.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -77,7 +76,7 @@ fun CartItemComponent(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            Icons.Default.Remove,
+                            Icons.Default.Delete,
                             contentDescription = "Disminuir",
                             modifier = Modifier.size(20.dp)
                         )

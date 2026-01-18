@@ -12,8 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.geekhub.ui.components.CartItemComponent
+import com.example.geekhub.View.components.CartItemComponent
 import com.example.geekhub.viewmodel.ProductViewModel
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.geekhub.ui.screens.CartScreen
-import com.example.geekhub.ui.screens.HomeScreen
-import com.example.geekhub.ui.screens.ProductDetailScreen
+import com.example.geekhub.View.screens.HomeScreen
+import com.example.geekhub.View.screens.CartScreen
+import com.example.geekhub.View.screens.ProductDetailScreen
 import com.example.geekhub.ui.theme.GeekHubTheme
 import com.example.geekhub.viewmodel.ProductViewModel
 
