@@ -1,5 +1,9 @@
 package com.example.geekhub
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +28,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createNotificationChannel() // IMPORTANTE
+
         setContent {
             GeekHubTheme {
                 Surface(
@@ -45,14 +52,11 @@ fun GeekHubApp(viewModel: ProductViewModel) {
         navController = navController,
         startDestination = "home"
     ) {
-        // Pantalla principal
         composable("home") {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
 
-        // Detalle de producto (versión simplificada - sin parámetros por ahora)
         composable("producto") {
-            // Para simplificar, mostramos el primer producto
             val producto = viewModel.obtenerProductoPorId("1")
             if (producto != null) {
                 ProductDetailScreen(
@@ -63,9 +67,25 @@ fun GeekHubApp(viewModel: ProductViewModel) {
             }
         }
 
-        // Carrito de compras
         composable("carrito") {
             CartScreen(navController = navController, viewModel = viewModel)
         }
+    }
+}
+
+/*  Canal de notificaciones */
+private fun ComponentActivity.createNotificationChannel() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            "cart_channel",
+            "Carrito",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Notificaciones del carrito de compras"
+        }
+
+        val manager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 }

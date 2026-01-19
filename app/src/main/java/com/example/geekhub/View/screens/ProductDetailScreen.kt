@@ -8,8 +8,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.geekhub.utils.NotificationHelper
 import com.example.geekhub.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,6 +21,9 @@ fun ProductDetailScreen(
     viewModel: ProductViewModel,
     productoId: String
 ) {
+    //  Context necesario para la notificación
+    val context = LocalContext.current
+
     val producto = viewModel.obtenerProductoPorId(productoId)
 
     if (producto == null) {
@@ -37,7 +42,10 @@ fun ProductDetailScreen(
                 title = { Text(producto.nombre) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
                     }
                 }
             )
@@ -58,11 +66,23 @@ fun ProductDetailScreen(
 
                     Button(
                         onClick = {
+                            // 🛒 Agrega al carrito
                             viewModel.agregarAlCarrito(producto)
+
+                            //  Notificación local nativa
+                            NotificationHelper.showProductAddedNotification(
+                                context = context,
+                                productName = producto.nombre
+                            )
+
+                            // ⬅ Volver atrás
                             navController.navigateUp()
                         }
                     ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                        Icon(
+                            Icons.Default.ShoppingCart,
+                            contentDescription = null
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Agregar al Carrito")
                     }
