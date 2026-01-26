@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.geekhub.View.screens.HomeScreen
 import com.example.geekhub.View.screens.CartScreen
 import com.example.geekhub.View.screens.ProductDetailScreen
+import com.example.geekhub.View.screens.RegisterScreen
 import com.example.geekhub.ui.theme.GeekHubTheme
 import com.example.geekhub.viewmodel.ProductViewModel
 
@@ -50,8 +51,14 @@ fun GeekHubApp(viewModel: ProductViewModel) {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "register"
     ) {
+
+        composable("register") {
+            RegisterScreen(navController = navController, modifier = Modifier.fillMaxSize())
+        }
+
+
         composable("home") {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
