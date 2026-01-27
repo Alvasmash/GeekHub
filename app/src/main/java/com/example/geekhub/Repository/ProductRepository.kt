@@ -2,7 +2,6 @@ package com.example.geekhub.repository
 
 import com.example.geekhub.model.Product
 import com.example.geekhub.model.ProductCategory
-import java.util.Date
 import java.util.UUID
 
 class ProductRepository {

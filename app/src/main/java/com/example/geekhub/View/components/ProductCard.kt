@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.geekhub.model.Product
+import com.example.geekhub.model.Product  // ← ESTE ES EL IMPORT CORRECTO
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +97,7 @@ fun ProductCard(
                 }
             }
 
+            // AGREGAR la categoría (si tu Product tiene la propiedad categoria)
             Text(
                 text = "Categoría: ${producto.categoria.name}",
                 style = MaterialTheme.typography.labelSmall,

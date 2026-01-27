@@ -3,6 +3,7 @@ package com.example.geekhub
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,15 +13,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.geekhub.View.screens.HomeScreen
 import com.example.geekhub.View.screens.CartScreen
+import com.example.geekhub.View.screens.HomeScreen
 import com.example.geekhub.View.screens.ProductDetailScreen
-import com.example.geekhub.View.screens.RegisterScreen
 import com.example.geekhub.ui.theme.GeekHubTheme
+import com.example.geekhub.view.screens.*
 import com.example.geekhub.viewmodel.ProductViewModel
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        createNotificationChannel() // IMPORTANTE
+        createNotificationChannel()
 
         setContent {
             GeekHubTheme {
@@ -48,30 +51,41 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GeekHubApp(viewModel: ProductViewModel) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+
+    // Verificar si ya hay un usuario registrado
+    val sharedPreferences = remember {
+        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    }
+
+    val hasUserRegistered = sharedPreferences.contains("username")
 
     NavHost(
         navController = navController,
-        startDestination = "register"
+        startDestination = if (hasUserRegistered) "login" else "register"
     ) {
-
-        composable("register") {
-            RegisterScreen(navController = navController, modifier = Modifier.fillMaxSize())
+        composable("login") {
+            LoginScreen(navController = navController)
         }
 
+        composable("register") {
+            RegisterScreen(navController = navController)
+        }
 
         composable("home") {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
 
-        composable("producto") {
-            val producto = viewModel.obtenerProductoPorId("1")
-            if (producto != null) {
-                ProductDetailScreen(
-                    navController = navController,
-                    viewModel = viewModel,
-                    productoId = producto.id
-                )
-            }
+        // RUTA CON PARÁMETRO: {productId} es un parámetro dinámico
+        composable("producto/{productId}") { backStackEntry ->
+            // Obtener el parámetro de la URL
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+
+            ProductDetailScreen(
+                navController = navController,
+                viewModel = viewModel,
+                productoId = productId  // Pasas el ID al screen
+            )
         }
 
         composable("carrito") {
@@ -79,8 +93,6 @@ fun GeekHubApp(viewModel: ProductViewModel) {
         }
     }
 }
-
-/*  Canal de notificaciones */
 private fun ComponentActivity.createNotificationChannel() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(
@@ -91,8 +103,7 @@ private fun ComponentActivity.createNotificationChannel() {
             description = "Notificaciones del carrito de compras"
         }
 
-        val manager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
     }
 }

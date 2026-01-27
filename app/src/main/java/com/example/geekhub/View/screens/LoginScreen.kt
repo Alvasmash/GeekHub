@@ -1,4 +1,4 @@
-// Renombra: RegisterActivity.kt → RegisterScreen.kt
+// Renombra: LoginActivity.kt → LoginScreen.kt
 package com.example.geekhub.view.screens
 
 import android.content.Context
@@ -17,14 +17,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     navController: NavController,  // Recibe NavController
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
 
     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -36,7 +35,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Crear Cuenta",
+            "Inicio de Sesión",
             fontSize = 28.sp,
             style = MaterialTheme.typography.titleLarge
         )
@@ -45,7 +44,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Elige un nombre de usuario") },
+            label = { Text("Nombre de usuario") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -53,17 +52,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Crea una contraseña") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirma tu contraseña") },
+            label = { Text("Contraseña") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation()
@@ -73,65 +62,55 @@ fun RegisterScreen(
         Button(
             onClick = {
                 when {
-                    username.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
+                    username.isBlank() || password.isBlank() -> {
                         Toast.makeText(
                             context,
                             "Por favor, completa todos los campos",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    password != confirmPassword -> {
-                        Toast.makeText(
-                            context,
-                            "Las contraseñas no coinciden",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    password.length < 6 -> {
-                        Toast.makeText(
-                            context,
-                            "La contraseña debe tener al menos 6 caracteres",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                     else -> {
-                        // Guardar usuario
-                        sharedPreferences.edit()
-                            .putString("username", username)
-                            .putString("password", password)
-                            .apply()
+                        val savedUsername = sharedPreferences.getString("username", null)
+                        val savedPassword = sharedPreferences.getString("password", null)
 
-                        Toast.makeText(
-                            context,
-                            "Registro exitoso",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        if (username == savedUsername && password == savedPassword) {
+                            Toast.makeText(
+                                context,
+                                "Inicio de sesión exitoso",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                        // Ir al login después de registrarse
-                        navController.navigate("login") {
-                            popUpTo("register") { inclusive = true }
+                            // Navegar al home usando Navigation Compose
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Nombre de usuario o contraseña incorrectos",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Registrarse")
+            Text("Entrar")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para ir a Login
+        // Botón para ir a Registro
         TextButton(
             onClick = {
-                // Navegar a la pantalla de Login
-                navController.navigate("login") {
-                    popUpTo("register") { inclusive = false }
+                navController.navigate("register") {
+                    popUpTo("login") { inclusive = false }
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("¿Ya tienes cuenta? Inicia Sesión")
+            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }
