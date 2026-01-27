@@ -1,5 +1,6 @@
 package com.example.geekhub.View.screens
 
+import ads_mobile_sdk.h6
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +19,7 @@ import com.example.geekhub.viewmodel.ProductViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-
+import androidx.compose.ui.graphics.Color
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,33 +42,60 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        if (productos.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No hay productos disponibles")
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            val state = viewModel.uiState
+
+            when (state) {
+                is ProductViewModel.LocationUiState.Loading -> CircularProgressIndicator()
+                is ProductViewModel.LocationUiState.Success -> {
+                    Text(text = "Tu ubicación actual:")
+                    Text(text = "${state.data.city}, ${state.data.country}")
+                    Text(text = "IP: ${state.data.query}")
+                    Button(onClick = { viewModel.getLocation() }, Modifier.padding(top = 16.dp)) {
+                        Text("Actualizar")
+                    }
+                }
+
+                is ProductViewModel.LocationUiState.Error -> {
+                    Text(text = "Error: ${state.message}", color = Color.Red)
+                    Button(onClick = { viewModel.getLocation() }) {
+                        Text("Reintentar")
+                    }
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                items(productos) { producto ->
-                    ProductCard(
-                        producto = producto,
-                        onClick = {
-                            // Navega a pantalla de detalle
-                            navController.navigate("producto")
-                        },
-                        onAgregarCarrito = {
-                            viewModel.agregarAlCarrito(producto)
-                        }
-                    )
+
+            if (productos.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No hay productos disponibles")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    items(productos) { producto ->
+                        ProductCard(
+                            producto = producto,
+                            onClick = {
+                                // Navega a pantalla de detalle
+                                navController.navigate("producto")
+                            },
+                            onAgregarCarrito = {
+                                viewModel.agregarAlCarrito(producto)
+                            }
+                        )
+                    }
                 }
             }
         }

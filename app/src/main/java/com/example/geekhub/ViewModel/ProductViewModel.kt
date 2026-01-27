@@ -1,7 +1,12 @@
 package com.example.geekhub.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.geekhub.Model.IpLocation
+import com.example.geekhub.Repository.LocationRepositorio
 import com.example.geekhub.model.*
 import com.example.geekhub.repository.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +17,34 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ProductViewModel : ViewModel() {
+
+    private val Repository = LocationRepositorio()
+
+    var uiState by mutableStateOf<LocationUiState>(LocationUiState.Loading)
+        private set
+
+    init {
+        getLocation()
+    }
+
+    fun getLocation() {
+        uiState = LocationUiState.Loading
+        viewModelScope.launch {
+            val result = Repository.fetchLocation()
+            uiState = result.fold(
+                onSuccess = { LocationUiState.Success(it) },
+                onFailure = { LocationUiState.Error(it.message ?: "Error desconocido") }
+            )
+        }
+    }
+
+    sealed class LocationUiState {
+        object Loading : LocationUiState()
+        data class Success(val data: IpLocation) : LocationUiState()
+        data class Error(val message: String) : LocationUiState()
+    }
+
+
 
     // REPOSITORY (Acceso a datos)
     private val repository = ProductRepository()

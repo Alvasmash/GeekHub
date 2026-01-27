@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import android.content.Intent
+import com.example.geekhub.MainActivity
 
 
 @Composable
@@ -66,18 +68,28 @@ fun RegisterScreen(
         Button(
             onClick = {
                 if (username.isBlank() || password.isBlank()) {
-                    Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Por favor, completa todos los campos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    // Guardamos los datos
+
+                    // Guardar usuario
                     sharedPreferences.edit()
                         .putString("username", username)
                         .putString("password", password)
                         .apply()
 
-                    Toast.makeText(context, "Registro exitoso. Ahora puedes iniciar sesión", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "Registro exitoso",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                    // Cerramos la pantalla de registro para volver al login
-                    (context as? Activity)?.finish()
+                    // 👉 IR AL MENÚ PRINCIPAL (PRODUCTOS)
+                    navController.navigate("home")
+
                 }
             },
             modifier = Modifier.fillMaxWidth()
